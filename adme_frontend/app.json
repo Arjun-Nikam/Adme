@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Adme Ops Screen",
+    "slug": "adme-ops-screen",
+    "scheme": "adme",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.adme.opsscreen"
+    },
+    "android": {
+      "package": "com.adme.opsscreen",
+      "permissions": ["CAMERA", "ACCESS_FINE_LOCATION"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        { "cameraPermission": "Adme uses the camera to scan offer QR codes." }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Adme uses your location to show offers near you."
+        }
+      ]
+    ],
+    "extra": {
+      "router": { "origin": false },
+      "eas": { "projectId": "REPLACE_WITH_EAS_PROJECT_ID" }
+    }
+  }
+}

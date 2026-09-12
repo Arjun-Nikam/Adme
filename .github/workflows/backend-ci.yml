@@ -1,0 +1,47 @@
+name: Backend CI
+on:
+  pull_request:
+    paths: ["adme_backend/**", ".github/workflows/backend-ci.yml"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: adme_backend
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: adme_db
+          MYSQL_USER: adme_user
+          MYSQL_PASSWORD: adme_pass
+          MYSQL_ROOT_PASSWORD: root_pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_pass"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+    env:
+      DJANGO_SECRET_KEY: ci-secret-key-not-used-in-prod-0123456789
+      DJANGO_DEBUG: "True"
+      # root so pytest-django can create the transient test_adme_db
+      DB_NAME: adme_db
+      DB_USER: root
+      DB_PASSWORD: root_pass
+      DB_HOST: 127.0.0.1
+      DB_PORT: "3306"
+      REDIS_URL: redis://127.0.0.1:6379/0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev pkg-config
+      - run: pip install -r requirements-dev.txt
+      - run: flake8 .
+      - run: python manage.py check
+      - run: pytest
